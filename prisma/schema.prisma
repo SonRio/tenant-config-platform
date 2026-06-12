@@ -1,0 +1,33 @@
+// Immutable config version store: every save inserts a new ConfigVersion row;
+// the Tenant.currentVersion pointer marks the active one. Rollback is a copy
+// (new version), never an in-place mutation.
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Tenant {
+  id             String          @id @default(cuid())
+  slug           String          @unique
+  name           String
+  currentVersion Int             @default(1)
+  createdAt      DateTime        @default(now())
+  versions       ConfigVersion[]
+}
+
+model ConfigVersion {
+  id        String   @id @default(cuid())
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenantId  String
+  version   Int // 1-based, increments per tenant
+  config    Json // validated TenantConfig
+  note      String? // "created" | "edit" | "rollback to v2"
+  createdAt DateTime @default(now())
+
+  @@unique([tenantId, version])
+}
