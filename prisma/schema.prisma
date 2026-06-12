@@ -9,9 +9,9 @@ datasource db {
 
 generator client {
   provider      = "prisma-client-js"
-  // "native" for local dev; rhel target is Vercel's Linux runtime (needed when
-  // deploying a locally-prebuilt bundle).
-  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+  // "native" for local dev. Vercel's serverless runtime here is ARM64 Linux;
+  // rhel covers x64 Linux too. Required when deploying a locally-prebuilt bundle.
+  binaryTargets = ["native", "linux-arm64-openssl-3.0.x", "rhel-openssl-3.0.x"]
 }
 
 model Tenant {
