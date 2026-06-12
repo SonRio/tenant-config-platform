@@ -4,7 +4,7 @@ A config-driven, multi-tenant insurance claim platform. Operations onboards an
 insurer entirely through an admin UI — **no code changes** — and the runtime
 processes claims according to each tenant's configuration.
 
-> Live URL: _set after deploy (see Deploy below)_
+> **Live URL:** https://tenant-config-platform.vercel.app/
 
 ## The two ideas that matter
 
