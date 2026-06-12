@@ -1,6 +1,6 @@
 "use client";
 
-import { useFormContext, useWatch } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FieldError } from "@/components/field-error";
@@ -9,18 +9,35 @@ import { useT } from "@/components/i18n-provider";
 import type { TenantFormValues } from "@/lib/tenant-form-schema";
 
 function ColorField({ path, label }: { path: string; label: string }) {
-  const { register, control } = useFormContext<TenantFormValues>();
-  const value = useWatch({ control, name: path as never }) as string;
+  const { control } = useFormContext<TenantFormValues>();
   return (
     <div className="grid gap-2">
       <Label>{label}</Label>
-      <div className="flex items-center gap-2">
-        <span
-          className="size-9 shrink-0 rounded-lg border shadow-soft"
-          style={{ backgroundColor: /^#[0-9a-fA-F]{6}$/.test(value) ? value : "transparent" }}
-        />
-        <Input {...register(path as never)} placeholder="#2563eb" />
-      </div>
+      <Controller
+        control={control}
+        name={path as never}
+        render={({ field }) => {
+          const val = typeof field.value === "string" ? field.value : "";
+          const valid = /^#[0-9a-fA-F]{6}$/.test(val);
+          return (
+            <div className="flex items-center gap-2">
+              {/* Clickable native color picker, synced with the hex input. */}
+              <input
+                type="color"
+                aria-label={label}
+                value={valid ? val : "#000000"}
+                onChange={(e) => field.onChange(e.target.value)}
+                className="size-9 shrink-0 cursor-pointer rounded-lg border bg-transparent p-1 shadow-soft"
+              />
+              <Input
+                value={val}
+                onChange={(e) => field.onChange(e.target.value)}
+                placeholder="#2563eb"
+              />
+            </div>
+          );
+        }}
+      />
     </div>
   );
 }
