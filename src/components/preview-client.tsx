@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ProcessResultView } from "@/components/process-result-view";
+import { useT } from "@/components/i18n-provider";
 import type { TenantConfig } from "@/config/tenant-config-schema";
 import type { ClaimData, ProcessResult } from "@/runtime/types";
 import type { ClaimType } from "@/config/dimensions/shared";
@@ -29,6 +30,7 @@ interface TenantListItem {
 }
 
 export function PreviewClient({ initialTenantId }: { initialTenantId: string | null }) {
+  const t = useT();
   const [tenants, setTenants] = useState<TenantListItem[]>([]);
   const [tenantId, setTenantId] = useState(initialTenantId ?? "");
   const [config, setConfig] = useState<TenantConfig | null>(null);
@@ -45,8 +47,8 @@ export function PreviewClient({ initialTenantId }: { initialTenantId: string | n
     fetch("/api/tenants")
       .then((r) => r.json())
       .then(setTenants)
-      .catch(() => toast.error("Failed to load tenants"));
-  }, []);
+      .catch(() => toast.error(t("preview.loadFailed")));
+  }, [t]);
 
   useEffect(() => {
     if (!tenantId) return;
@@ -85,7 +87,7 @@ export function PreviewClient({ initialTenantId }: { initialTenantId: string | n
     const data = await res.json();
     setLoading(false);
     if (!res.ok) {
-      toast.error(data.error ?? "Preview failed");
+      toast.error(data.error ?? t("preview.previewFailed"));
       return;
     }
     setResult(data);
@@ -95,19 +97,19 @@ export function PreviewClient({ initialTenantId }: { initialTenantId: string | n
     <div className="grid gap-6 md:grid-cols-2">
       <Card>
         <CardHeader>
-          <CardTitle>Sample claim</CardTitle>
+          <CardTitle>{t("preview.sampleClaim")}</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
           <div className="grid gap-2">
-            <Label>Tenant</Label>
+            <Label>{t("preview.tenant")}</Label>
             <Select value={tenantId} onValueChange={(v) => setTenantId(v ?? "")}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Choose a tenant" />
+                <SelectValue placeholder={t("preview.chooseTenant")} />
               </SelectTrigger>
               <SelectContent>
-                {tenants.map((t) => (
-                  <SelectItem key={t.id} value={t.id}>
-                    {t.name}
+                {tenants.map((tn) => (
+                  <SelectItem key={tn.id} value={tn.id}>
+                    {tn.name}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -117,22 +119,22 @@ export function PreviewClient({ initialTenantId }: { initialTenantId: string | n
           {config && (
             <>
               <div className="grid gap-2">
-                <Label>Claim type</Label>
+                <Label>{t("preview.claimType")}</Label>
                 <Select value={claimType} onValueChange={(v) => setClaimType(v ?? "")}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Claim type" />
+                    <SelectValue placeholder={t("preview.claimType")} />
                   </SelectTrigger>
                   <SelectContent>
-                    {enabledTypes.map((t) => (
-                      <SelectItem key={t} value={t}>
-                        {t}
+                    {enabledTypes.map((ct) => (
+                      <SelectItem key={ct} value={ct}>
+                        {ct}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
               <div className="grid gap-2">
-                <Label>Amount</Label>
+                <Label>{t("preview.amount")}</Label>
                 <Input
                   type="number"
                   value={amount}
@@ -140,7 +142,7 @@ export function PreviewClient({ initialTenantId }: { initialTenantId: string | n
                 />
               </div>
               <div className="grid gap-2">
-                <Label>Submitted at</Label>
+                <Label>{t("preview.submittedAt")}</Label>
                 <Input
                   type="date"
                   value={submittedAt}
@@ -162,7 +164,7 @@ export function PreviewClient({ initialTenantId }: { initialTenantId: string | n
                       }
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder={`Choose ${f.label}`} />
+                        <SelectValue placeholder={f.label} />
                       </SelectTrigger>
                       <SelectContent>
                         {(f.options ?? []).map((o) => (
@@ -185,7 +187,7 @@ export function PreviewClient({ initialTenantId }: { initialTenantId: string | n
               ))}
 
               <Button onClick={run} disabled={loading || !claimType}>
-                {loading ? "Running…" : "Run preview"}
+                {loading ? t("preview.running") : t("preview.runPreview")}
               </Button>
             </>
           )}
@@ -194,16 +196,13 @@ export function PreviewClient({ initialTenantId }: { initialTenantId: string | n
 
       <Card>
         <CardHeader>
-          <CardTitle>Outcome</CardTitle>
+          <CardTitle>{t("preview.outcome")}</CardTitle>
         </CardHeader>
         <CardContent>
           {result ? (
             <ProcessResultView result={result} />
           ) : (
-            <p className="text-sm text-muted-foreground">
-              Pick a tenant and run a sample claim. This calls the exact same
-              processClaim the runtime uses.
-            </p>
+            <p className="text-sm text-muted-foreground">{t("preview.emptyHint")}</p>
           )}
         </CardContent>
       </Card>

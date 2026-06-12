@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { getActiveConfig } from "@/lib/config-versions";
 import { TenantForm } from "@/components/tenant-form";
+import { PageHeading } from "@/components/page-heading";
 import type { TenantFormValues } from "@/lib/tenant-form-schema";
 
 export const dynamic = "force-dynamic";
@@ -26,10 +27,11 @@ export default async function EditTenantPage({
 
   return (
     <div className="grid gap-6">
-      <h1 className="text-2xl font-semibold">Edit {tenant.name}</h1>
-      <p className="-mt-4 text-sm text-muted-foreground">
-        Saving creates a new immutable version (currently v{tenant.currentVersion}).
-      </p>
+      <PageHeading
+        titleKey="form.editTitle"
+        subtitleKey="form.editHint"
+        vars={{ name: tenant.name, version: tenant.currentVersion }}
+      />
       <TenantForm tenantId={id} defaultValues={defaultValues} />
     </div>
   );

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { REGISTRY } from "@/config/dimensions/registry";
 import { FORM_SECTIONS } from "@/components/form-sections";
+import { useT } from "@/components/i18n-provider";
 import {
   Card,
   CardContent,
@@ -27,6 +28,7 @@ interface TenantFormProps {
 
 export function TenantForm({ tenantId, defaultValues }: TenantFormProps) {
   const router = useRouter();
+  const t = useT();
   const isEdit = Boolean(tenantId);
 
   const methods = useForm<TenantFormValues>({
@@ -58,31 +60,31 @@ export function TenantForm({ tenantId, defaultValues }: TenantFormProps) {
     );
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      toast.error(err.error ?? "Save failed");
+      toast.error(err.error ?? t("form.saveFailed"));
       return;
     }
-    toast.success(isEdit ? "Tenant updated" : "Tenant created");
+    toast.success(isEdit ? t("form.updated") : t("form.created"));
     router.push("/");
     router.refresh();
   };
 
-  const onInvalid = () => toast.error("Please fix the highlighted errors");
+  const onInvalid = () => toast.error(t("form.fixErrors"));
 
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(onValid, onInvalid)} className="grid gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Tenant</CardTitle>
+            <CardTitle>{t("form.tenantSection")}</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-2">
-              <Label>Name</Label>
+              <Label>{t("form.name")}</Label>
               <Input {...register("name")} placeholder="MediCare Plus" />
               <FieldError message={errorMessage(errors, "name")} />
             </div>
             <div className="grid gap-2">
-              <Label>Slug</Label>
+              <Label>{t("form.slug")}</Label>
               <Input
                 {...register("slug")}
                 placeholder="medicare-plus"
@@ -99,7 +101,7 @@ export function TenantForm({ tenantId, defaultValues }: TenantFormProps) {
           return (
             <Card key={d.key}>
               <CardHeader>
-                <CardTitle>{d.title}</CardTitle>
+                <CardTitle>{t(`dimensions.${d.key}`)}</CardTitle>
               </CardHeader>
               <CardContent>
                 <Section />
@@ -110,10 +112,10 @@ export function TenantForm({ tenantId, defaultValues }: TenantFormProps) {
 
         <div className="flex gap-3">
           <Button type="submit" disabled={isSubmitting}>
-            {isEdit ? "Save new version" : "Create tenant"}
+            {isEdit ? t("form.saveNewVersion") : t("form.createTenant")}
           </Button>
           <Button type="button" variant="outline" onClick={() => router.push("/")}>
-            Cancel
+            {t("common.cancel")}
           </Button>
         </div>
       </form>

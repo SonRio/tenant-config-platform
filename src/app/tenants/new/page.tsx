@@ -1,9 +1,10 @@
 import { TenantForm } from "@/components/tenant-form";
+import { PageHeading } from "@/components/page-heading";
 
 export default function NewTenantPage() {
   return (
     <div className="grid gap-6">
-      <h1 className="text-2xl font-semibold">New tenant</h1>
+      <PageHeading titleKey="form.newTitle" />
       <TenantForm />
     </div>
   );

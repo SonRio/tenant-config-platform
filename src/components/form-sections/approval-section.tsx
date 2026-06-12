@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FieldError } from "@/components/field-error";
 import { errorMessage } from "@/lib/form-utils";
+import { useT } from "@/components/i18n-provider";
 import type { TenantFormValues } from "@/lib/tenant-form-schema";
 
 export function ApprovalSection() {
+  const t = useT();
   const { register, control, formState } = useFormContext<TenantFormValues>();
   const { fields, append, remove } = useFieldArray({
     control,
@@ -19,7 +21,7 @@ export function ApprovalSection() {
   return (
     <div className="grid gap-4">
       <div className="grid max-w-xs gap-2">
-        <Label>Auto-approval threshold</Label>
+        <Label>{t("form.approval.threshold")}</Label>
         <Input
           type="number"
           {...register("config.approval.autoApprovalThreshold", {
@@ -27,7 +29,7 @@ export function ApprovalSection() {
           })}
         />
         <p className="text-xs text-muted-foreground">
-          Claims strictly below this amount are auto-approved.
+          {t("form.approval.thresholdHint")}
         </p>
         <FieldError
           message={errorMessage(
@@ -38,11 +40,13 @@ export function ApprovalSection() {
       </div>
 
       <div className="grid gap-3">
-        <Label>Approval tiers (ascending, contiguous, last unbounded)</Label>
+        <Label>{t("form.approval.tiers")}</Label>
         {fields.map((f, i) => (
           <div key={f.id} className="grid items-end gap-3 sm:grid-cols-[1fr_1fr_1.5fr_auto]">
             <div className="grid gap-1.5">
-              <Label className="text-xs text-muted-foreground">Min amount</Label>
+              <Label className="text-xs text-muted-foreground">
+                {t("form.approval.minAmount")}
+              </Label>
               <Input
                 type="number"
                 {...register(`config.approval.tiers.${i}.minAmount` as never, {
@@ -51,7 +55,9 @@ export function ApprovalSection() {
               />
             </div>
             <div className="grid gap-1.5">
-              <Label className="text-xs text-muted-foreground">Max amount</Label>
+              <Label className="text-xs text-muted-foreground">
+                {t("form.approval.maxAmount")}
+              </Label>
               <Controller
                 control={control}
                 name={`config.approval.tiers.${i}.maxAmount` as never}
@@ -82,13 +88,15 @@ export function ApprovalSection() {
               />
             </div>
             <div className="grid gap-1.5">
-              <Label className="text-xs text-muted-foreground">Approver role</Label>
+              <Label className="text-xs text-muted-foreground">
+                {t("form.approval.approverRole")}
+              </Label>
               <Input
                 {...register(`config.approval.tiers.${i}.approverRole` as never)}
               />
             </div>
             <Button type="button" variant="ghost" size="sm" onClick={() => remove(i)}>
-              Remove
+              {t("common.remove")}
             </Button>
           </div>
         ))}
@@ -101,7 +109,7 @@ export function ApprovalSection() {
             append({ minAmount: 0, maxAmount: null, approverRole: "" })
           }
         >
-          + Add tier
+          + {t("form.approval.addTier")}
         </Button>
         <FieldError
           message={errorMessage(formState.errors, "config.approval.tiers")}

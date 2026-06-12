@@ -3,6 +3,7 @@
 import { useFormContext, useWatch } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { useT } from "@/components/i18n-provider";
 import {
   CHANNELS,
   NOTIFY_EVENTS,
@@ -14,6 +15,7 @@ import type { TenantFormValues } from "@/lib/tenant-form-schema";
 type EventRule = { event: NotifyEvent; channels: Channel[]; template?: string };
 
 export function NotificationsSection() {
+  const t = useT();
   const { control, setValue } = useFormContext<TenantFormValues>();
   const events =
     (useWatch({ control, name: "config.notifications.events" }) as EventRule[]) ??
@@ -66,7 +68,7 @@ export function NotificationsSection() {
         );
       })}
       <Label className="text-xs text-muted-foreground">
-        Select channels to enable an event. Unselected events send nothing.
+        {t("form.notifications.hint")}
       </Label>
     </div>
   );

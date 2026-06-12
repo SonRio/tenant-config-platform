@@ -5,10 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FieldError } from "@/components/field-error";
 import { errorMessage } from "@/lib/form-utils";
+import { useT } from "@/components/i18n-provider";
 import type { ClaimType } from "@/config/dimensions/shared";
 import type { TenantFormValues } from "@/lib/tenant-form-schema";
 
 export function SlaSection() {
+  const t = useT();
   const { register, control, formState } = useFormContext<TenantFormValues>();
   const enabled =
     (useWatch({ control, name: "config.claimTypes.enabledTypes" }) as ClaimType[]) ??
@@ -17,15 +19,13 @@ export function SlaSection() {
   return (
     <div className="grid gap-4">
       {enabled.length === 0 ? (
-        <p className="text-sm text-muted-foreground">
-          Enable claim types first — each needs an SLA.
-        </p>
+        <p className="text-sm text-muted-foreground">{t("form.sla.enableFirst")}</p>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {enabled.map((type) => (
             <div key={type} className="grid gap-1.5">
               <Label className="text-xs text-muted-foreground">
-                {type} — business days
+                {t("form.sla.businessDays", { type })}
               </Label>
               <Input
                 type="number"
@@ -46,7 +46,7 @@ export function SlaSection() {
       )}
 
       <div className="grid max-w-xs gap-2">
-        <Label>Escalation role</Label>
+        <Label>{t("form.sla.escalationRole")}</Label>
         <Input {...register("config.sla.escalation.notifyRole")} />
         <FieldError
           message={errorMessage(

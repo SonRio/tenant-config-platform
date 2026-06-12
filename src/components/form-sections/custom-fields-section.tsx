@@ -15,10 +15,12 @@ import {
 } from "@/components/ui/select";
 import { FieldError } from "@/components/field-error";
 import { errorMessage } from "@/lib/form-utils";
+import { useT } from "@/components/i18n-provider";
 import { FIELD_TYPES } from "@/config/dimensions/shared";
 import type { TenantFormValues } from "@/lib/tenant-form-schema";
 
 function FieldRow({ index, onRemove }: { index: number; onRemove: () => void }) {
+  const t = useT();
   const { register, control, formState } = useFormContext<TenantFormValues>();
   const type = useWatch({
     control,
@@ -27,18 +29,24 @@ function FieldRow({ index, onRemove }: { index: number; onRemove: () => void }) 
   const base = `config.customFields.fields.${index}`;
 
   return (
-    <div className="grid gap-3 rounded-lg border p-3">
+    <div className="grid gap-3 rounded-xl border bg-muted/30 p-3">
       <div className="grid gap-3 sm:grid-cols-[1fr_1fr_auto_auto]">
         <div className="grid gap-1.5">
-          <Label className="text-xs text-muted-foreground">Key</Label>
+          <Label className="text-xs text-muted-foreground">
+            {t("form.customFields.key")}
+          </Label>
           <Input {...register(`${base}.key` as never)} placeholder="employeeId" />
         </div>
         <div className="grid gap-1.5">
-          <Label className="text-xs text-muted-foreground">Label</Label>
+          <Label className="text-xs text-muted-foreground">
+            {t("form.customFields.label")}
+          </Label>
           <Input {...register(`${base}.label` as never)} placeholder="Employee ID" />
         </div>
         <div className="grid gap-1.5">
-          <Label className="text-xs text-muted-foreground">Type</Label>
+          <Label className="text-xs text-muted-foreground">
+            {t("form.customFields.type")}
+          </Label>
           <Controller
             control={control}
             name={`${base}.type` as never}
@@ -51,9 +59,9 @@ function FieldRow({ index, onRemove }: { index: number; onRemove: () => void }) 
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {FIELD_TYPES.map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {t}
+                  {FIELD_TYPES.map((ft) => (
+                    <SelectItem key={ft} value={ft}>
+                      {ft}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -72,13 +80,15 @@ function FieldRow({ index, onRemove }: { index: number; onRemove: () => void }) 
               />
             )}
           />
-          Required
+          {t("form.customFields.required")}
         </label>
       </div>
 
       {type === "select" && (
         <div className="grid gap-1.5">
-          <Label className="text-xs text-muted-foreground">Options (one per line)</Label>
+          <Label className="text-xs text-muted-foreground">
+            {t("form.customFields.options")} · {t("form.onePerLine")}
+          </Label>
           <Controller
             control={control}
             name={`${base}.options` as never}
@@ -103,7 +113,7 @@ function FieldRow({ index, onRemove }: { index: number; onRemove: () => void }) 
 
       <div className="flex justify-end">
         <Button type="button" variant="ghost" size="sm" onClick={onRemove}>
-          Remove field
+          {t("form.customFields.removeField")}
         </Button>
       </div>
     </div>
@@ -111,6 +121,7 @@ function FieldRow({ index, onRemove }: { index: number; onRemove: () => void }) 
 }
 
 export function CustomFieldsSection() {
+  const t = useT();
   const { control } = useFormContext<TenantFormValues>();
   const { fields, append, remove } = useFieldArray({
     control,
@@ -131,7 +142,7 @@ export function CustomFieldsSection() {
           append({ key: "", label: "", type: "text", required: false })
         }
       >
-        + Add custom field
+        + {t("form.customFields.addField")}
       </Button>
     </div>
   );
